@@ -1,0 +1,59 @@
+---
+title: "Homework8_TengSiongYeap"
+author: "TengSiong (T.S) YEAP"
+date: "March 7, 2019"
+output: html_document
+---
+
+```{r}
+#load libraries
+library(ggplot2)
+library(gganimate)
+library(plyr)
+theme_set(theme_bw())
+```
+
+```{r}
+# built-in dataset ChickWeight
+w = ChickWeight
+dim(w)
+str(w)
+```
+
+```{r}
+#how many chickens in each diet?
+c <- count(w, 'Diet')
+
+#show histogram
+h <- ggplot(c, aes(x = Diet, y = freq, fill = Diet)) +
+     geom_col() +
+     ylab("Count") +
+     geom_text(aes(label = freq), vjust = -0.3, color = "black", size = 5) +
+     scale_fill_viridis_d() +
+     theme_minimal() +
+     theme(
+        panel.grid = element_blank(),
+        panel.grid.major.y = element_line(color = "white"),
+        panel.ontop = TRUE,
+        legend.position = "none") +
+     transition_states(Diet, wrap = FALSE) +
+     shadow_mark() +
+     enter_grow() +
+     enter_fade()
+h
+```
+
+```{r}
+g <- ggplot(w, aes(x = Time, y = weight, color = Diet, group = Chick)) + 
+     geom_line() +
+     scale_colour_viridis_d() +
+     labs(x = "The Number of Days Since Birth", y = "Weight") +
+     theme(legend.position = "top") +
+     geom_point() +
+     facet_grid(~Diet) +
+     transition_reveal(Time)
+g
+```
+
+
+

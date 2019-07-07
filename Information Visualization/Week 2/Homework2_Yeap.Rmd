@@ -1,0 +1,176 @@
+---
+title: "Homework2"
+author: "TengSiong (T.S) YEAP"
+date: "January 23, 2019"
+output: html_document
+---
+
+####Part 1:Hands-on Replication
+**Bar Chart - Fig 4-11**
+```{r}
+#load the dataset from the url
+hotdogs <- read.csv("http://datasets.flowingdata.com/hot-dog-contest-winners.csv",
+            sep = ",", header = TRUE)
+
+#inspect the head of the dataset
+head(hotdogs)
+
+#Define the color for each bar: if a record has been broken through, 
+#fill the color with dark maroon; otherwise, fill the color with light brown
+fill_colors <- c()
+for ( i in 1:length(hotdogs$New.record) ) {
+    if (hotdogs$New.record[i] == 1) {
+        fill_colors <- c(fill_colors, "#5D0F0D")
+    } else {
+        fill_colors <- c(fill_colors, "#e8ca93")
+    }
+}
+
+#plot the barplot
+#1st arg: the hotdogs eaten         2nd arg: specify names for each bar
+#3rd arg: color                     4th arg: border (Y/N)
+#5th arg: spacing in btw bars       6th and 7th arg: x- and y-axes label
+#8th arg: title
+barplot(hotdogs$Dogs.eaten, names.arg = hotdogs$Year, col = fill_colors,
+          border = NA, space = 0.3, xlab = "Year", 
+          ylab = "Hot dogs and buns (HDB) eaten",
+        main = "Nathan's Hot Dog Eating Contest Results, 1980-2010")
+```
+
+**Stacked bar chart - Fig 4-22**
+```{r}
+#load the dataset
+hot_dog_places <- read.csv('http://datasets.flowingdata.com/hot-dog-places.csv',
+                    sep = ",", header = TRUE)
+
+#inspect the head of the dataset
+head(hot_dog_places)
+
+#Rename columns to move "X"
+names(hot_dog_places) <- c("2000", "2001", "2002", "2003", "2004", "2005", "2006", 
+                           "2007", "2008", "2009", "2010")
+
+#inspect the head of the dataset
+head(hot_dog_places)
+
+#stacked bar chart requires matrix rather than a df
+#convert the df to a matrix
+hot_dog_matrix <- as.matrix(hot_dog_places)
+
+#Define colors
+stacked_color <- c("#2b1e18", "#9b6c56", "#f0e2a8")
+
+#ylim is to set a limit on y-axes
+barplot(hot_dog_matrix, border = NA, space = 0.25, ylim = c(0, 200), 
+        col = stacked_color, xlab = "Year", ylab = "Hot dogs and buns (HDBs) eaten",
+        main = "Hot Dog Eating Contest Results, 1980-2010")
+
+```
+
+**Scatterplot - Fig 4-28**
+```{r}
+#load the dataset
+subscribers <- read.csv(
+                "http://datasets.flowingdata.com/flowingdata_subscribers.csv",
+                  sep = ",", header = TRUE)
+
+#inspect dataset
+head(subscribers)
+
+#scatterplot - combining both density and points
+plot(subscribers$Subscribers, type = "h", ylim = c(0, 30000),
+     xlab = "Day", ylab = "Subscribers")
+points(subscribers$Subscribers, pch = 19, col = "black")
+```
+
+**Time Series - Fig 4-34**
+```{r}
+#Load the dataset
+population <- read.csv("http://datasets.flowingdata.com/world-population.csv",
+                       sep = ",", header = TRUE)
+
+#Inspect the dataset
+head(population)
+
+#Time series plot
+plot(population$Year, population$Population, type = "l", ylim = c(0, 7000000000),
+     xlab = "Year", ylab = "Population")
+```
+
+**Step chart - Fig 4-43**
+```{r}
+#Load the dataset
+postage <- read.csv("http://datasets.flowingdata.com/us-postage.csv",
+                    sep = ",", header = TRUE)
+
+#Inspect the dataset
+head(postage)
+
+#Step chart
+plot(postage$Year, postage$Price, type="s",
+    main="US Postage Rates for Letters, First Ounce, 1991-2010",
+    xlab="Year", ylab="Postage Rate (Dollars)")
+```
+**Loess curve - Fig 4-51**
+```{r}
+#Load the dataset
+unemployment <-read.csv(
+  "http://datasets.flowingdata.com/unemployment-rate-1948-2010.csv", sep =",")
+
+#Inspect the dataset
+head(unemployment)
+
+#Loess curve
+#degree:controls the degree of the polynomials that are fitted
+#span: controls how smooth the curve is. 
+#The closer the span is to zero, the closer the fit.
+scatter.smooth(x = 1:length(unemployment$Value), y = unemployment$Value,
+               ylim = c(0,11), degree = 2, col = "#CCCCCC", span = 0.5)
+```
+
+####Part 2:Simple Distributions
+```{r}
+#load the dataset
+art <- read.csv("art.csv", header = TRUE, stringsAsFactors = FALSE)
+head(art)
+```
+
+```{r}
+#explore the dimension, structure and summary of the dataset
+dim(art)
+str(art)
+summary(art)
+```
+*Use the par() function to put all 4 plots in the same plot space (like we did in the lab). Also, give the plots titles, x and y labels, use colors that you like, and if you are using a plot with points, use a symbol you like (pch). In other words, customize these plots to show me that you know how to modify different elements of the plots.*
+```{r}
+#Due to margin issue, I cannot fit 4 plots in the same plot space.
+par(mfrow=c(1,2))
+
+#What is the distribution of total.sale for the whole dataset? 
+#Provide two different plots that show two different ways of showing distribution.
+plot(sort(art$total.sale), main = "Distribution of Total Sales", type = "l",
+     ylab = "Total Sale")
+points(sort(art$total.sale), pch = 20, col = "black")
+
+boxplot(art$total.sale ~ art$year ,main = "Total Sale versus Year", 
+        xlab = "Year", ylab = "Total Sale")
+```
+
+*Next we want to compare the distributions of subsets of total.sales. Use a third of distribution plot (different than what you used for the question above) for both of these plots.*
+```{r}
+#par(mfrow=c(2,1))
+#par() compressed the plots and lost a lot of details.
+
+#What is the distribution of the totals sales for drawing paper?
+draw.paper <- art$total.sale[art$paper == "drawing"]
+hist(draw.paper, main="Distribution of the Total Sales for Drawing Paper",
+     xlab = "Total Sales for Drawing Paper")
+
+#What is the distribution of the totals sales for watercolor paper?
+watercolor.paper <- art$total.sale[art$paper == "watercolor"]
+
+d <- density(watercolor.paper)
+plot(d, main = "Distribution of the Total Sales for Watercolor Paper",
+     xlab = "Total Sales for Watercolor Paper")
+polygon(d, col="blue", border="black") 
+```

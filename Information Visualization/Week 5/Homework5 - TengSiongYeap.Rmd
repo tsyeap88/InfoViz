@@ -1,0 +1,82 @@
+---
+title: "HW5"
+author: "TengSiong (T.S) YEAP"
+date: "February 17, 2019"
+output: html_document
+---
+
+*Scatterplot Matrix, Figure 6-9*
+```{r, fig.height = 10, fig.width = 12}
+#load the data
+crime <- read.csv('http://datasets.flowingdata.com/crimeRatesByState2005.csv',
+                  sep=",", header=TRUE)
+
+#For the sake of a graphic that is more clear and useful, take out Washington, DC, #and remove the United States averages and place full focus on individual states.
+crime2 <- crime[crime$state != "District of Columbia",]
+crime2 <- crime2[crime2$state != "United States",]
+
+#plot(crime2[,2:9])
+#lines(loess.smooth(crime2[,2:9]), col="blue")
+pairs(crime2[,2:9],panel=panel.smooth, col="azure3",lwd = 2, cex = 1.5,
+      main="Rates per 100,000 population")
+```
+
+*Histogram, Figure 6-24*
+```{r}
+#load data
+birth <- read.csv("http://datasets.flowingdata.com/birth-rate.csv")
+
+hist(birth$X2008, main="GLOBAL DISTRIBUTION OF BIRTH RATE",
+     xlab="Live Births per 1,000 population", ylab="Country Count", 
+     col="violetred4", xlim=c(0,60))
+```
+
+*Density Plot,Figure 6-32*
+```{r}
+#subset and drop NA
+birth2008 <- birth$X2008[!is.na(birth$X2008)]
+
+#estimate a curve
+d2008 <- density(birth2008)
+
+#yaxs="i" to forze it back to 0
+plot(d2008, type="n",main="GLOBAL DISTRIBUTION OF BIRTH RATE IN 2008",
+     xlab="Live Births per 1,000 population", ylab="Density", ylim=c(0.00,0.045),
+     yaxs="i")
+
+#color background gray
+rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], col = "grey")
+
+#show grid
+grid()
+polygon(d2008, col="#821122", border="#cccccc")
+
+```
+
+*make 1-2 multiple dimension plots using data of your choice, see Fig. 6-38 & 6-40 for example*
+```{r}
+#load data
+car <- read.csv("carsales.csv", header=T)
+
+head(car)
+```
+```{r}
+sales<- tapply(car$Sales.in.thousands,list(car$Manufacturer),sum)
+sales <- sort(sales, decreasing=T)
+sales
+
+count <- sort(table(car$Manufacturer), decreasing = T)
+count
+```
+
+```{r}
+par(mfrow=c(2,1), mar=c(3,3,2,1))
+
+#plot top 3 sales manufacturer
+barplot(sales[1:3], main="Top 3 Sales by Manufacturer", col=c("red","blue","green")
+        ,xlab="Manufacturer", ylab="Sales in thousands",space=0,ylim=c(0,2500))
+
+barplot(count[1:3], main="Top 3 Number of Car Models Sold by Each Manufacturer",
+        col=c("blue","red","yellow")
+        ,xlab="Manufacturer", ylab="Number of Car Models",space=0, ylim=c(0,12))
+```

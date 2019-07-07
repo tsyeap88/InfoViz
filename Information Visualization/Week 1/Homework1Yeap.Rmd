@@ -1,0 +1,110 @@
+---
+title: "Homework1"
+author: "TS YEAP"
+date: "January 20, 2019"
+output: html_document
+---
+
+Load libraries
+```{r message = FALSE}
+library(gdata)
+library(rvest)
+library(htmltab)
+```
+##Question 1
+Import the .xlsx file directly from this url: http://www.huduser.gov/portal/datasets/fmr/fmr2017/FY2017_4050_FMR.xlsx. Include str and dim functions on the imported data set.
+```{r}
+# the url for the online Excel file
+url <- "http://www.huduser.gov/portal/datasets/fmr/fmr2017/FY2017_4050_FMR.xlsx"
+
+# use read.xls to import
+data <- read.xls(url, perl = "C:/Perl64/bin/perl.exe")
+
+#show the structure of the data
+str(data)
+
+#show the dimention of the data
+dim(data)
+
+#show the first few rows and columns of the table
+data[1:6, 1:10]
+```
+
+##Question 2 & 3
+Q2: Scrape Table 3 (Net birth/death estimates by industry supersector) and store in a data frame. Include str and dim functions on your data frame. 
+
+Q3:Scrape Table 4 ( Differences in seasonally adjusted levels ) and store in a data frame. Include str and dim functions on your data frame.. Note you will have to accommodate the double line heading as part of your cleansing
+```{r}
+#rvest library
+webpage <- read_html("http://www.bls.gov/web/empsit/cesbmart.htm")
+
+#extract the tables from the webpage
+tbls <- html_nodes(webpage, "table")
+
+#show the head of the tables
+head(tbls)
+```
+
+```{r}
+#empty list to add table data to
+tbls_ls <- list()
+
+#Table 3. Net birth/death...
+tbls_ls$Table3 <- webpage %>%
+        html_nodes("#Table3") %>% 
+        html_table() %>%
+        .[[1]]
+
+#Table 4. Differences in seasonally...
+tbls_ls$Table4 <- webpage %>%
+        html_nodes("#Table4") %>% 
+        html_table(fill = TRUE) %>%
+        .[[1]]
+
+#show the structure of the table list
+str(tbls_ls)
+```
+
+```{r}
+#save Table3 in a variable
+table3 <- tbls_ls$Table3
+
+#show the head, structure and dimension of Table 3
+head(table3)
+str(table3)
+dim(table3)
+```
+
+```{r}
+#save Table4 in a variable
+table4 <- tbls_ls$Table4
+
+#show the head of Table 4
+head(table4)
+```
+
+```{r}
+#Double line heading... Further cleansing
+#remove row 1 that includes part of the headings
+table4 <- table4[-1,]
+
+# rename table headings
+colnames(table4) <- c("2017", "Previously_Published_Lvl", "Revised_Lvl", "Diff_Lvl",
+                          "Previously_Published_Chg", "Revised_Chg", "Diff_Chg")
+
+#show head, structure and dimension of Table4
+head(table4)
+str(table4)
+dim(table4)
+```
+
+##Question 4
+Scrape the following table (Sovereign States and Dependency by Population) from https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population  using htmltab. Include str and dim functions on your dataframe. Note you should look at the webpage source code to determine what to include in the which = variable
+```{r}
+url <- 
+  "https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population"
+pop <- htmltab(doc = url, which = "//th[text() = 'Rank']/ancestor::table")
+head(pop)
+str(pop)
+dim(pop)
+```

@@ -1,0 +1,94 @@
+---
+title: "Homework7 _ TengSiongYeap"
+author: "TengSiong (T.S) YEAP"
+date: "March 2, 2019"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+dim(diamonds)
+str(diamonds)
+```
+
+```{r}
+#Check the level of clarity
+print(levels(diamonds$clarity))
+
+#According to ?diamonds, the order should be: (I1 (worst), SI2, SI1, VS2, VS1, VVS2, VVS1, IF (best)), which is different than what is being stated in the assignment as well
+
+#Re-arrange the order from the worst to the best
+diamonds$clarity <- factor(diamonds$clarity,
+                            labels = c("I1", "SI2", "SI1", "VS2", "VS1", "VVS2",
+                                       "VVS1", "IF")) 
+```
+**1. Recreate the above boxplot using ggplot. What does this tell you about median price with respect to clarity?**
+```{r}
+rainbow = c("lightpink2","darkgoldenrod","darkolivegreen4","seagreen",
+            "mediumaquamarine","cornflowerblue","mediumpurple","magenta1")
+p1 <- ggplot(data = diamonds, aes(x = clarity, y = price, fill = clarity)) + 
+  
+      #to add the perpendicular line at the end of whiskers
+      stat_boxplot(geom ='errorbar', width = 0.5) +
+      geom_boxplot() +
+      scale_x_discrete(name = "clarity") +
+      scale_y_continuous(name = "price") +
+      theme(axis.text.x = element_text(angle = 45), legend.position="none") +
+      scale_fill_manual(values= rainbow)
+p1
+```
+
+*In respect of clarity, the median price goes lower from the worst clarity to the best clarity*
+
+**2.	Recreate the above boxplot to show caret by clarity. What does this tell you about caret size with respect to clarity**
+```{r}
+p2 <- ggplot(data = diamonds, aes(x = clarity, y = carat, fill = clarity)) + 
+  
+      #to add the perpendicular line at the end of whiskers
+      stat_boxplot(geom ='errorbar', width = 0.5) +
+      geom_boxplot() +
+      scale_x_discrete(name = "clarity") +
+      scale_y_continuous(name = "carat") +
+      theme(axis.text.x = element_text(angle = 45), legend.position="none") +
+      scale_fill_manual(values= rainbow)
+p2
+```
+
+*The distribution of the size of carat is getting smaller from the worst clarty to the best clarity*
+
+**3.	Recreate the above stacked bar chart using ggplot, What does the stacked bar say about clarity and color. Do lower clarity diamonds have good color and why. Is there an association between clarity and color, why**
+```{r}
+#Check the level of color
+print(levels(diamonds$color))
+```
+```{r, fig.width=5, fig.height=6}
+#set color for each level
+p3color <- c("D" = "orangered2",
+             "E" = "dodgerblue2",
+             "F" = "mediumpurple2",
+             "G" = "azure4",
+             "H" = "darkgoldenrod1",
+             "I" = "chartreuse3",
+             "J" = "lightpink2")
+
+p3 <- ggplot(data = diamonds) +
+      geom_bar(aes(x = clarity, 
+                   fill = forcats::fct_rev(color)), #reversed the stacked bar
+                   width = 0.5) +
+      scale_y_continuous(breaks = seq(0,14000,2000),
+                         limits = c(0,14001),
+                         expand = c(0, 0)) + #plot stops at the end of y-tick
+      theme(axis.text.x = element_text(angle = 90),
+            panel.grid.minor = element_blank(), #remove minor grid
+            legend.position = c(1, 1), #include legend inside the plot
+            legend.justification = c("right", "top"), #top right position
+            legend.box.just = "right",
+            legend.background = element_blank(), #remove the background of the legend
+            legend.margin = margin(6, 6, 6, 6)) + 
+      scale_fill_manual(values = p3color, 
+                        name = "color",  #rename the legend
+                        guide = guide_legend(reverse=TRUE)) #reverse the order
+p3
+```
+
+*The stacked bar is in the bell shape distribution. The extreme ends of the distribution do not have many good color. However, the below average clarity diamonds have more good color than the diamonds that are above average in clarity. It is because it is very rare to have a clearer diamond with good color.*

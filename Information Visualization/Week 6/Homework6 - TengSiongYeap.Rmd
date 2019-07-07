@@ -1,0 +1,24 @@
+---
+title: "Homework6 - TengSiongYeap"
+author: "TengSiong (T.S) YEAP"
+date: "February 21, 2019"
+output: html_document
+---
+
+
+*use the diamonds dataset (part of ggplot2 package), create a visualization to explore the relationship between carat and price conditioned on (diamond) color. you should explore various visualization options, and make/select/present a visualization that you think is most effective.*
+```{r}
+library(ggplot2)
+
+ggplot(data=diamonds) + 
+  geom_point(mapping=aes(x=carat, y=price, color=color))
+```
+
+*use the diamonds dataset, create a visualization to explore the distribution of price conditioned on (diamond) cut. you should explore various visualization options, and make/select/present a visualization that you think is most effective.*
+```{r}
+ggplot(data=diamonds) + 
+  geom_histogram(binwidth=100, aes(x=price)) + 
+  ggtitle("Diamond Price Distribution by Cut") +
+  xlab("Diamond Price U$") + ylab("Frequency") + 
+  theme_minimal() + facet_wrap(~cut, scales="free_y") #make y-scale different
+```

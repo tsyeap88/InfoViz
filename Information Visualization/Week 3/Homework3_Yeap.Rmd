@@ -1,0 +1,65 @@
+---
+title: "Homework3_Yeap"
+author: "TengSiong (T.S) YEAP"
+date: "February 4, 2019"
+output: html_document
+---
+
+####Part 2
+*Make 4 different plots that show different ways that we can see the distribution of the total.sale column. Use the par() function to put all 4 plots in the same plot space.*
+```{r}
+#load the dataset
+art <- read.csv("art.csv", header = TRUE, stringsAsFactors = FALSE)
+head(art)
+summary(art)
+
+par(mfrow=c(2,2))
+hist(art$total.sale, main="Historgram of Total Sales", xlab="Total Sales",
+     col="cadetblue",border=0)
+boxplot(art$total.sale, main="Boxplot of Total Sales",border="cadetblue")
+plot(density(art$total.sale), main="Density curve of Total Sales",lty=0)
+polygon(density(art$total.sale), col="cadetblue")
+plot(sort(art$total.sale),type="l", main="Step density of Total Sales",
+     col="cadetblue",ylab="Total Sales")
+```
+
+*Does the art company sell more units of drawing paper or watercolor paper? (remember, each line is a sale that may have more than one unit. Use aggregate.)*
+```{r}
+papersale<-aggregate(art$units.sold,list(art$paper),FUN=sum)
+papersale
+
+barplot(papersale$x, ylim=c(0,16000), xlab="Product name",ylab="Units sold",
+        names.arg=c("Drawing","Watercolor"),
+        col=c("darkolivegreen2","darkolivegreen4"),
+        main="Units sold between Drawing & Watercolor")
+```
+
+*Does the art company bring in more money (revenue) selling drawing paper or watercolor paper? *
+```{r}
+paper_rev<-aggregate(art$total.sale,list(art$paper),FUN=sum)
+paper_rev
+
+barplot(paper_rev$x, ylim=c(0,120000), xlab="Product name",ylab="Sales",
+        names.arg=c("Drawing","Watercolor"),
+        col=c("burlywood","burlywood1"),
+        main="Sales between Drawing & Watercolor")
+```
+
+*Each paper (watercolor and drawing) has different subtypes. For drawing paper only, do some subtypes always sell more (or less) units no matter which store it is, or do some stores tend to sell more units of one subtype than others?*
+```{r}
+drawing<-art[art$paper=='drawing',]
+
+fill_col=c("#FF3030","#EEEE00","#63B8FF","#43CD80")
+unitsold<-tapply(drawing$units.sold,list(drawing$paper.type,drawing$store),sum)
+unitsold
+
+barplot(unitsold,beside = TRUE,main = 'Units Sold products by Store',
+        xlab = 'Store',ylab = 'Units Sold',ylim = c(0,1000),
+        col = fill_col,
+        border=0)
+legend(x='topright',
+       c("Journal","Pads","Roll","Sheet"),
+       fill = fill_col,
+       bty = 'n',
+       border=0)
+```
